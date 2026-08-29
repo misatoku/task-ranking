@@ -1,9 +1,9 @@
-import type { task } from "src\features\tasks\types\task.ts";
+import type { Task } from "../features/tasks/types/task";
 
-const STRAGE_KEY = "task-ranking-tasks";
+const STORAGE_KEY = "task-ranking-tasks";
 
 export function loadTasks(): Task[] {
-  const data = localStorage.getItem(STRAGE_KEY);
+  const data = localStorage.getItem(STORAGE_KEY);
   if (!data) return [];
 
   try {
@@ -14,5 +14,5 @@ export function loadTasks(): Task[] {
 }
 
 export function saveTasks(tasks: Task[]) {
-  localStorage.setItem(STRAGE_KEY, JSON.stringify(tasks));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
