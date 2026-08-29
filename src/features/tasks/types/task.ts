@@ -1,6 +1,8 @@
 export type Task = {
   id: string;
+  groupId: string;
   title: string;
-  completed: boolean;
+  content: string;
+  isCompleted: boolean;
   createdAt: string;
 };
