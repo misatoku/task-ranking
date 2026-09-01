@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { useAtomValue } from "jotai";
 import type { Task } from "../types/task";
 import { tasksAtom } from "../atoms/tasksAtom";
@@ -15,9 +16,17 @@ const formatTaskDate = (createdAt: string) => {
   return `${date.getMonth() + 1}/${date.getDate()}`;
 };
 
+const getTaskDateKey = (createdAt: string) => {
+  const date = new Date(createdAt);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${date.getFullYear()}-${month}-${day}`;
+};
+
 const groupTasks = (tasks: Task[]) => {
   return tasks.reduce<TaskGroup[]>((groups, task) => {
-    const groupId = task.groupId ?? task.id;
+    const groupId = getTaskDateKey(task.createdAt);
     const lastGroup = groups.at(-1);
 
     if (lastGroup?.id === groupId) {
@@ -51,18 +60,33 @@ export function TaskBlockList() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {taskGroups.map((group) => (
         <section
           key={group.id}
           className="overflow-hidden rounded border border-gray-200 bg-white"
         >
-          <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700">
+          <div className="border-b border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700">
             {formatTaskDate(group.createdAt)}
           </div>
-          {group.tasks.map((task) => (
-            <TaskBlock key={task.id} task={task} />
-          ))}
+          <div className="py-1">
+            {group.tasks.map((task, index) => {
+              const previousTask = group.tasks[index - 1];
+              const isFirstTaskInBatch =
+                !previousTask || previousTask.groupId !== task.groupId;
+
+              return (
+                <Fragment key={task.id}>
+                  {isFirstTaskInBatch && (
+                    <h2 className="px-3 pt-2 pb-1 text-sm font-semibold text-gray-700">
+                      {task.title}
+                    </h2>
+                  )}
+                  <TaskBlock task={task} />
+                </Fragment>
+              );
+            })}
+          </div>
         </section>
       ))}
     </div>
