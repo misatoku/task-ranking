@@ -2,6 +2,7 @@ import { atom } from "jotai";
 import type { Task } from "../types/task";
 import { loadTasks, saveTasks } from "../../../storage/taskStorage";
 import { createTask } from "../utils/createTask";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export const tasksAtom = atom<Task[]>(loadTasks());
 
@@ -27,11 +28,27 @@ export const addTasksAtom = atom(
   },
 );
 
+export const reorderTasksAtom = atom(
+  null,
+  (get, set, { activeId, overId }: { activeId: string; overId: string }) => {
+    const tasks = get(tasksAtom);
+    const oldIndex = tasks.findIndex((task) => task.id === activeId);
+    const newIndex = tasks.findIndex((task) => task.id === overId);
+
+    if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) {
+      return;
+    }
+
+    const nextTasks = arrayMove(tasks, oldIndex, newIndex);
+
+    set(tasksAtom, nextTasks);
+    saveTasks(nextTasks);
+  },
+);
+
 export const toggleTaskAtom = atom(null, (get, set, taskId: string) => {
   const nextTasks = get(tasksAtom).map((task) =>
-    task.id === taskId
-      ? { ...task, isCompleted: !task.isCompleted }
-      : task,
+    task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task,
   );
 
   set(tasksAtom, nextTasks);
