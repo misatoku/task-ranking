@@ -8,9 +8,10 @@ import { CSS } from "@dnd-kit/utilities";
 
 type TaskBlockProps = {
   task: Task;
+  rank: number;
 };
 
-export function TaskBlock({ task }: TaskBlockProps) {
+export function TaskBlock({ task, rank }: TaskBlockProps) {
   const toggleTask = useSetAtom(toggleTaskAtom);
   const deleteTask = useSetAtom(deletedTaskAtom);
 
@@ -44,6 +45,13 @@ export function TaskBlock({ task }: TaskBlockProps) {
       >
         <GripVertical size={15} aria-hidden="true" />
       </button>
+
+      <span
+        aria-label={`順位 ${rank}`}
+        className="w-6 shrink-0 text-center text-sm font-semibold tabular-nums text-gray-600"
+      >
+        {rank}
+      </span>
 
       <button
         type="button"

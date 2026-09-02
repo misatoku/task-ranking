@@ -75,6 +75,9 @@ export function TaskBlockList() {
     }),
   );
   const taskGroups = groupTasks(tasks);
+  const taskRanks = new Map(
+    tasks.map((task, index) => [task.id, index + 1]),
+  );
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
@@ -125,7 +128,10 @@ export function TaskBlockList() {
                           {task.title}
                         </h2>
                       )}
-                      <TaskBlock task={task} />
+                      <TaskBlock
+                        task={task}
+                        rank={taskRanks.get(task.id) ?? 0}
+                      />
                     </Fragment>
                   );
                 })}
