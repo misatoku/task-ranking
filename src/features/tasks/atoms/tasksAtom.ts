@@ -21,7 +21,7 @@ export const addTasksAtom = atom(
     const newTasks = normalizedContents.map((content) =>
       createTask(normalizedTitle, content, { groupId, createdAt }),
     );
-    const nextTasks = [...get(tasksAtom), ...newTasks];
+    const nextTasks = [...newTasks, ...get(tasksAtom)];
 
     set(tasksAtom, nextTasks);
     saveTasks(nextTasks);
