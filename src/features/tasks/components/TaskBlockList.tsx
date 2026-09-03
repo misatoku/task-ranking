@@ -24,6 +24,10 @@ type TaskGroup = {
   tasks: Task[];
 };
 
+type TaskBlockListProps = {
+  view: "today" | "history";
+};
+
 const formatTaskDate = (createdAt: string) => {
   const date = new Date(createdAt);
 
@@ -61,7 +65,7 @@ const groupTasks = (tasks: Task[]) => {
   }, []);
 };
 
-export function TaskBlockList() {
+export function TaskBlockList({ view }: TaskBlockListProps) {
   const tasks = useAtomValue(tasksAtom);
   const reorderTasks = useSetAtom(reorderTasksAtom);
   const sensors = useSensors(
@@ -74,9 +78,17 @@ export function TaskBlockList() {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
-  const taskGroups = groupTasks(tasks);
+  const todayKey = getTaskDateKey(new Date().toISOString());
+  const visibleTasks = tasks.filter((task) => {
+    const taskDateKey = getTaskDateKey(task.createdAt);
+
+    return view === "today"
+      ? taskDateKey === todayKey
+      : taskDateKey < todayKey;
+  });
+  const taskGroups = groupTasks(visibleTasks);
   const taskRanks = new Map(
-    tasks.map((task, index) => [task.id, index + 1]),
+    visibleTasks.map((task, index) => [task.id, index + 1]),
   );
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
@@ -88,10 +100,12 @@ export function TaskBlockList() {
     });
   };
 
-  if (tasks.length === 0) {
+  if (visibleTasks.length === 0) {
     return (
       <p className="rounded border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500">
-        まだタスクがありません
+        {view === "today"
+          ? "今日のタスクはありません"
+          : "過去のタスクはありません"}
       </p>
     );
   }
