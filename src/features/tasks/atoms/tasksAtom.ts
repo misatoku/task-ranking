@@ -61,3 +61,10 @@ export const deletedTaskAtom = atom(null, (get, set, taskId: string) => {
   set(tasksAtom, nextTasks);
   saveTasks(nextTasks);
 });
+
+export const deleteTaskGroupAtom = atom(null, (get, set, groupId: string) => {
+  const nextTasks = get(tasksAtom).filter((task) => task.groupId !== groupId);
+
+  set(tasksAtom, nextTasks);
+  saveTasks(nextTasks);
+});

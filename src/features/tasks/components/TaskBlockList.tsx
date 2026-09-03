@@ -1,6 +1,10 @@
 import { Fragment } from "react";
 import type { Task } from "../types/task";
-import { reorderTasksAtom, tasksAtom } from "../atoms/tasksAtom";
+import {
+  reorderTasksAtom,
+  tasksAtom,
+  deleteTaskGroupAtom,
+} from "../atoms/tasksAtom";
 import { TaskBlock } from "./TaskBlock";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
@@ -17,6 +21,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { Trash2 } from "lucide-react";
 
 type TaskGroup = {
   id: string;
@@ -68,6 +73,7 @@ const groupTasks = (tasks: Task[]) => {
 export function TaskBlockList({ view }: TaskBlockListProps) {
   const tasks = useAtomValue(tasksAtom);
   const reorderTasks = useSetAtom(reorderTasksAtom);
+  const deleteTaskGroup = useSetAtom(deleteTaskGroupAtom);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -82,9 +88,7 @@ export function TaskBlockList({ view }: TaskBlockListProps) {
   const visibleTasks = tasks.filter((task) => {
     const taskDateKey = getTaskDateKey(task.createdAt);
 
-    return view === "today"
-      ? taskDateKey === todayKey
-      : taskDateKey < todayKey;
+    return view === "today" ? taskDateKey === todayKey : taskDateKey < todayKey;
   });
   const taskGroups = groupTasks(visibleTasks);
   const taskRanks = new Map(
@@ -138,9 +142,20 @@ export function TaskBlockList({ view }: TaskBlockListProps) {
                   return (
                     <Fragment key={task.id}>
                       {isFirstTaskInBatch && (
-                        <h2 className="px-3 pt-2 pb-1 text-sm font-semibold text-gray-700">
-                          {task.title}
-                        </h2>
+                        <div className="flex items-center justify-between px-3 pt-2 pb-1">
+                          <h2 className="text-sm font-semibold text-gray-700">
+                            {task.title}
+                          </h2>
+
+                          <button
+                            type="button"
+                            onClick={() => deleteTaskGroup(task.groupId)}
+                            aria-label={`${task.title}をまとめて削除`}
+                            className="grid h-7 w-7 shrink-0 place-items-center rounded hover:bg-gray-50"
+                          >
+                            <Trash2 size={15} aria-hidden="true" />
+                          </button>
+                        </div>
                       )}
                       <TaskBlock
                         task={task}
