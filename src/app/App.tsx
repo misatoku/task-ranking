@@ -23,13 +23,13 @@ export default function App() {
         <h1 className="text-2xl font-bold">Task Ranking</h1>
         <div className="flex items-center gap-4">
           <h2 className="font-semibold">
-            {isHistory ? "過去の履歴" : "今日のタスク"}
+            {isHistory ? "履歴" : "最新のタスク"}
           </h2>
           <Link
             to={isHistory ? "/" : "/history"}
             className="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-50"
           >
-            {isHistory ? "今日に戻る" : "過去の履歴を見る"}
+            {isHistory ? "最新に戻る" : "履歴を見る"}
           </Link>
         </div>
       </div>
