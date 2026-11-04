@@ -91,7 +91,6 @@ export function TaskInput() {
           className="w-full rounded border border-gray-300 px-3 py-2 outline-none focus:border-black"
         />
       </div>
-
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-3">
           <label className="text-sm font-semibold text-gray-700">タスク</label>
@@ -132,12 +131,11 @@ export function TaskInput() {
           ))}
         </div>
       </div>
-
       <button
         type="button"
         onClick={handleComplete}
         disabled={!canComplete}
-        className="inline-flex h-11 items-center justify-center gap-2 rounded bg-black px-4 font-semibold text-white disabled:cursor-not-allowed disabled:bg-gray-300"
+        className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded bg-black px-4 font-semibold text-white disabled:cursor-not-allowed disabled:bg-gray-300"
       >
         <Check size={18} aria-hidden="true" />
         完了

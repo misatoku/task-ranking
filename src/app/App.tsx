@@ -35,7 +35,7 @@ export default function App() {
       </div>
 
       <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-2">
-        <div className="min-h-0">
+        <div className="min-h-0 overflow-y-auto pr-2">
           <TaskInput />
         </div>
 
