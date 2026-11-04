@@ -70,6 +70,19 @@ const groupTasks = (tasks: Task[]) => {
   }, []);
 };
 
+const getTaskRanks = (tasks: Task[]) => {
+  const groupRanks = new Map<string, number>(); // groupIdごとの順位を保持するMapを作成
+
+  return new Map(
+    tasks.map((task) => {
+      const rank = (groupRanks.get(task.groupId) ?? 0) + 1; // 現在のgroupIdの順位を取得し、1を加算
+      groupRanks.set(task.groupId, rank); // 更新した順位を保存
+
+      return [task.id, rank];
+    }),
+  );
+};
+
 export function TaskBlockList({ view }: TaskBlockListProps) {
   const tasks = useAtomValue(tasksAtom);
   const reorderTasks = useSetAtom(reorderTasksAtom);
@@ -91,9 +104,7 @@ export function TaskBlockList({ view }: TaskBlockListProps) {
     return view === "today" ? taskDateKey === todayKey : taskDateKey < todayKey;
   });
   const taskGroups = groupTasks(visibleTasks);
-  const taskRanks = new Map(
-    visibleTasks.map((task, index) => [task.id, index + 1]),
-  );
+  const taskRanks = getTaskRanks(visibleTasks);
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
