@@ -46,6 +46,65 @@ export const reorderTasksAtom = atom(
   },
 );
 
+const getTaskDateKey = (createdAt: string): string => {
+  const date = new Date(createdAt);
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${date.getFullYear()}-${month}-${day}`;
+};
+
+export const reorderTaskGroupsAtom = atom(
+  null,
+  (
+    get,
+    set,
+    {
+      activeGroupId,
+      overGroupId,
+    }: { activeGroupId: string; overGroupId: string },
+  ) => {
+    if (activeGroupId === overGroupId) return;
+
+    const tasks = get(tasksAtom);
+    const activeTask = tasks.find((task) => task.groupId === activeGroupId);
+    const overTask = tasks.find((task) => task.groupId === overGroupId);
+
+    if (
+      !activeTask ||
+      !overTask ||
+      getTaskDateKey(activeTask.createdAt) !==
+        getTaskDateKey(overTask.createdAt)
+    ) {
+      return;
+    }
+
+    const dateKey = getTaskDateKey(activeTask.createdAt);
+    const dateTasks = tasks.filter(
+      (task) => getTaskDateKey(task.createdAt) === dateKey,
+    );
+    const groupIds = [...new Set(dateTasks.map((task) => task.groupId))];
+    const oldIndex = groupIds.indexOf(activeGroupId);
+    const newIndex = groupIds.indexOf(overGroupId);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reorderedGroupIds = arrayMove(groupIds, oldIndex, newIndex);
+    const reorderedDateTasks = reorderedGroupIds.flatMap((groupId) =>
+      dateTasks.filter((task) => task.groupId === groupId),
+    );
+    let dateTaskIndex = 0;
+    const nextTasks = tasks.map((task) =>
+      getTaskDateKey(task.createdAt) === dateKey
+        ? reorderedDateTasks[dateTaskIndex++]
+        : task,
+    );
+
+    set(tasksAtom, nextTasks);
+    saveTasks(nextTasks);
+  },
+);
+
 export const toggleTaskAtom = atom(null, (get, set, taskId: string) => {
   const nextTasks = get(tasksAtom).map((task) =>
     task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task,
