@@ -92,14 +92,14 @@ const getTaskBatches = (tasks: Task[]) => {
 };
 
 const getTaskRanks = (tasks: Task[]) => {
-  const groupRanks = new Map<string, number>(); // groupIdごとの順位を保持するMapを作成
+  const groupRanks = new Map<string, number>(); // グループ内での現在順位を保存する
 
   return new Map(
     tasks.map((task) => {
-      const rank = (groupRanks.get(task.groupId) ?? 0) + 1; // 現在のgroupIdの順位を取得し、1を加算
+      const rank = (groupRanks.get(task.groupId) ?? 0) + 1; // 同じgroupIdがあったら、現在順位に1を足す。なければ1を返す
       groupRanks.set(task.groupId, rank); // 更新した順位を保存
 
-      return [task.id, rank];
+      return [task.id, rank]; // タスクidと順位を組み合わせて返す
     }),
   );
 };
