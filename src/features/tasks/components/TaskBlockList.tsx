@@ -198,6 +198,7 @@ export function TaskBlockList({ view }: TaskBlockListProps) {
   const todayKey = getTaskDateKey(new Date().toISOString());
   const visibleTasks = tasks.filter((task) => {
     const taskDateKey = getTaskDateKey(task.createdAt);
+    // 今日のタスクか履歴のタスクかを判定する
     return view === "today" ? taskDateKey === todayKey : taskDateKey < todayKey;
   });
   const taskGroups = groupTasks(visibleTasks);
