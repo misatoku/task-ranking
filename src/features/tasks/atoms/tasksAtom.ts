@@ -6,6 +6,10 @@ import { arrayMove } from "@dnd-kit/sortable";
 
 export const tasksAtom = atom<Task[]>(loadTasks());
 
+export const reloadTasksAtom = atom(null, (_get, set) => {
+  set(tasksAtom, loadTasks());
+});
+
 export const addTasksAtom = atom(
   null,
   (get, set, title: string, contents: string[]) => {

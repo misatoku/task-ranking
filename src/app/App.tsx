@@ -1,6 +1,9 @@
 import { TaskInput } from "../features/tasks/components/TaskInput";
 import { TaskBlockList } from "../features/tasks/components/TaskBlockList";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useSetAtom } from "jotai";
+import { reloadTasksAtom } from "../features/tasks/atoms/tasksAtom";
 
 type TaskListPanelProps = {
   view: "today" | "history";
@@ -16,6 +19,21 @@ function TaskListPanel({ view }: TaskListPanelProps) {
 
 export default function App() {
   const isHistory = useLocation().pathname === "/history";
+  const reloadTasks = useSetAtom(reloadTasksAtom);
+
+  useEffect(() => {
+    const handleVisiblityChange = () => {
+      if (document.visibilityState === "visible") {
+        reloadTasks();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisiblityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisiblityChange);
+    };
+  }, [reloadTasks]);
 
   return (
     <main className="mx-auto flex h-screen max-w-6xl flex-col overflow-hidden p-8">
