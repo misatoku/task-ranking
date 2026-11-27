@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useSetAtom } from "jotai";
 import { Check, Trash2 } from "lucide-react";
 import { addTasksAtom } from "../atoms/tasksAtom";
+import { useNavigate } from "react-router-dom";
 
 type DraftTask = {
   id: string;
@@ -20,6 +21,7 @@ export function TaskInput() {
   ]);
   const taskInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const addTasks = useSetAtom(addTasksAtom);
+  const navigate = useNavigate();
 
   const hasTaskContent = draftTasks.some((task) => task.content.trim() !== "");
   const canComplete = title.trim() !== "" && hasTaskContent;
@@ -75,6 +77,11 @@ export function TaskInput() {
     );
     setTitle("");
     setDraftTasks([createDraftTask()]);
+
+    navigate("/", {
+      replace: true,
+      state: { submittedAt: Date.now() },
+    });
   };
 
   return (
