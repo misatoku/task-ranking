@@ -18,6 +18,7 @@ function TaskListPanel({ view }: TaskListPanelProps) {
 }
 
 export default function App() {
+  const location = useLocation();
   const isHistory = useLocation().pathname === "/history";
   const reloadTasks = useSetAtom(reloadTasksAtom);
 
@@ -59,7 +60,15 @@ export default function App() {
 
         <div className="flex min-h-0 flex-col">
           <Routes>
-            <Route index element={<TaskListPanel view="today" />} />
+            <Route
+              index
+              element={
+                <TaskListPanel
+                  key={location.state?.submittedAt ?? location.key}
+                  view="today"
+                />
+              }
+            />
             <Route path="history" element={<TaskListPanel view="history" />} />
           </Routes>
         </div>
